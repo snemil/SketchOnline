@@ -1,0 +1,76 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Sketch Online</title>
+	<link rel="stylesheet" href="style/main.css">
+	<script src="scripts/jquery.js"> </script>
+	<script src="scripts/jquery.event.drag-2.0.js"></script>
+	<script src="http://130.238.246.82:8080/socket.io/socket.io.js"></script>
+	<script src="client.js"> </script>
+</head>
+
+<body id="big_wrapper">
+
+	<section id="main_section">
+
+	<header id="top_header">
+		<h1>Sketch Online</h1>
+	</header>
+		<section id="control_panel">
+			<div id="control_color">
+				<b>Pen color:</b>
+				<br>
+				<form>
+					<input name="color_control" id="button_black" type="radio" checked><label for="button_black">Black</label></input>
+					<input name="color_control" id="button_blue" type="radio"><label for="button_blue">Blue</label></input>
+					<input name="color_control" id="button_red" type="radio"><label for="button_red">Red</label></input>
+					<input name="color_control" id="button_yellow" type="radio"><label for="button_yellow">Yellow</label></input>
+					<input name="color_control" id="button_green" type="radio"><label for="button_green">Green</label></input>
+					<input name="color_control" id="button_white" type="radio"><label for="button_white">White</label></input>
+				</form>
+
+				<!--<ol>
+					<li><div id="button_black"></div></li>
+					<li><div id="button_blue"></div></li>
+					<li><div id="button_red"></div></li>
+					<li><div id="button_yellow"></div></li>
+					<li><div id="button_green"></div></li>
+					<li><div id="button_white"></div></li>
+				</ol>-->
+			</div>
+			<div id="control_size">
+				<b>Pen size:</b>
+				<br>
+				<form>
+					<input name="size_control" id="button_size1" type="radio"><label for="button_size1">3px</input>
+					<input name="size_control" id="button_size2" type="radio"><label for="button_size2">8px</input>
+					<input name="size_control" id="button_size3" type="radio" checked><label for="button_size3">15px</input>
+					<input name="size_control" id="button_size4" type="radio"><label for="button_size4">25px</input>
+				</form>
+			</div>
+			<div>
+				<button id="button_reset" type="button">Reset workspace</button>
+			</div>
+		</section>
+
+		<canvas id="can" width="1000" height="600">
+		</canvas>
+
+		<div id="info">
+			<ul id="clients"></ul>
+			<div id="worker">
+				<p>Since you've joined everyone has drawn a total of <span id="total"></span> pixels</p>
+				<p>Each individual: </p>
+				<ul id ="pixels">
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!--<footer id="footer">
+		Copyright
+	</footer>-->
+</body>
+
+</html>

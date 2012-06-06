@@ -1,0 +1,127 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span> * @fileOverview
+<span class='line'>  3</span> * @author &lt;a href="sketch@sketch.nu">SketchO!&lt;/a>
+<span class='line'>  4</span> * @version 0.1.
+<span class='line'>  5</span> * This is the server-side application. It listens to events created by the connected users and listens to the server.
+<span class='line'>  6</span> */</span><span class="WHIT">
+<span class='line'>  7</span> </span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'>  8</span> </span><span class="COMM">/**
+<span class='line'>  9</span> * Server side
+<span class='line'> 10</span> * @namespace SERVER
+<span class='line'> 11</span> * @class SERVER
+<span class='line'> 12</span> */</span><span class="WHIT"> </span><span class="WHIT">
+<span class='line'> 13</span> 
+<span class='line'> 14</span> </span><span class="COMM">/**
+<span class='line'> 15</span> * io socket.io variable for input/output 
+<span class='line'> 16</span> * @type socket.io
+<span class='line'> 17</span> */</span><span class="WHIT">
+<span class='line'> 18</span> 
+<span class='line'> 19</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">io</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'socket.io'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">listen</span><span class="PUNC">(</span><span class="NUMB">8080</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="COMM">/**
+<span class='line'> 22</span> * clients Array for storing socketID's for connected clients
+<span class='line'> 23</span> * @type Array
+<span class='line'> 24</span> */</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">clients</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> 
+<span class='line'> 27</span> </span><span class="COMM">/**
+<span class='line'> 28</span> * lines Contains coordinates for everything previously drawn.
+<span class='line'> 29</span> * @type array
+<span class='line'> 30</span> */</span><span class="WHIT">
+<span class='line'> 31</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">lines</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 32</span> 
+<span class='line'> 33</span> </span><span class="COMM">/**
+<span class='line'> 34</span> * @param 'event'
+<span class='line'> 35</span> * 'connection' event: when client connects to server and recieves unique socket object.
+<span class='line'> 36</span> * 'client_connected' event: when client connects and sends its own data.
+<span class='line'> 37</span> * 'reset_workspace' event: server recieves this event and send it to all clients.
+<span class='line'> 38</span> * 'drawClick' event: recieves data from client and sends data to other clients.
+<span class='line'> 39</span> * 'disconnect' event: sends witch ID has disconnected from the server.
+<span class='line'> 40</span> * @param callback-function {@link socket. } 
+<span class='line'> 41</span> * Current socket object.
+<span class='line'> 42</span> * @param callback-function {@link data. } 
+<span class='line'> 43</span> * Current data.
+<span class='line'> 44</span> * @param callback-function {@link player. }
+<span class='line'> 45</span> * Current player.
+<span class='line'> 46</span> * @name on
+<span class='line'> 47</span> * @function
+<span class='line'> 48</span> * @returns void
+<span class='line'> 49</span> */</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="NAME">io.sockets.on</span><span class="PUNC">(</span><span class="STRN">'connection'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">socket</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">	</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="WHIT">	</span><span class="NAME">console.log</span><span class="PUNC">(</span><span class="STRN">'New client connected '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">socket</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="WHIT">	</span><span class="NAME">socket.on</span><span class="PUNC">(</span><span class="STRN">'client_connected'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="WHIT">		</span><span class="NAME">data.id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">socket.id</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="WHIT">		</span><span class="NAME">clients.push</span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 56</span> 
+<span class='line'> 57</span> 
+<span class='line'> 58</span> </span><span class="COMM">/**
+<span class='line'> 59</span> * This methods sends data through sockets to all clients.
+<span class='line'> 60</span> * @param 'event'
+<span class='line'> 61</span> * 'new_client' event: sends array with clients to all users.
+<span class='line'> 62</span> * 'previous_drawn' event: sends lines array to all users.
+<span class='line'> 63</span> * 'draw' event: sends the current drawn line.
+<span class='line'> 64</span> * 'client_dc' event: sends that a client has disconnected to all users.
+<span class='line'> 65</span> * @param clients
+<span class='line'> 66</span> * @name emit
+<span class='line'> 67</span> * @function
+<span class='line'> 68</span> * @returns void
+<span class='line'> 69</span> */</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">		</span><span class="NAME">io.sockets.emit</span><span class="PUNC">(</span><span class="STRN">"new_client"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">clients</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">	</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">		</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">		</span><span class="NAME">socket.emit</span><span class="PUNC">(</span><span class="STRN">'previous_drawn'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">lines</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 74</span> 
+<span class='line'> 75</span> 
+<span class='line'> 76</span> 
+<span class='line'> 77</span> </span><span class="WHIT">	</span><span class="NAME">socket.on</span><span class="PUNC">(</span><span class="STRN">'resetWorkspace'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">		</span><span class="NAME">io.sockets.emit</span><span class="PUNC">(</span><span class="STRN">"resetWorkspace"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">		</span><span class="NAME">lines</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 81</span> 
+<span class='line'> 82</span> 
+<span class='line'> 83</span> 
+<span class='line'> 84</span> </span><span class="WHIT">	</span><span class="NAME">socket.on</span><span class="PUNC">(</span><span class="STRN">'drawClick'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">player</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 85</span> 
+<span class='line'> 86</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">line</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">			</span><span class="NAME">id</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">socket.id</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">			</span><span class="NAME">color</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.color</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">			</span><span class="NAME">size</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.size</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">			</span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.x</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">			</span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.y</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">			</span><span class="NAME">oldX</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.oldX</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">			</span><span class="NAME">oldY</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.oldY</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">		</span><span class="NAME">lines.push</span><span class="PUNC">(</span><span class="NAME">line</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 96</span> 
+<span class='line'> 97</span> 
+<span class='line'> 98</span> </span><span class="WHIT">		</span><span class="NAME">io.sockets.emit</span><span class="PUNC">(</span><span class="STRN">"draw"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">			</span><span class="NAME">id</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">socket.id</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">			</span><span class="NAME">color</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.color</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">			</span><span class="NAME">size</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.size</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">			</span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.x</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">			</span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.y</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">			</span><span class="NAME">oldX</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.oldX</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">			</span><span class="NAME">oldY</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">player.oldY</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>108</span> 
+<span class='line'>109</span> </span><span class="WHIT">	</span><span class="NAME">socket.on</span><span class="PUNC">(</span><span class="STRN">'disconnect'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">		</span><span class="KEYW">for</span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">clients.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">clients</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">socket.id</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">				</span><span class="NAME">clients.splice</span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">				</span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">		</span><span class="NAME">console.log</span><span class="PUNC">(</span><span class="STRN">"Client: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">socket.id</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">" disconnected"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">		</span><span class="NAME">socket.broadcast.emit</span><span class="PUNC">(</span><span class="STRN">"client_dc"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">id</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">socket.id</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">	</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span> </span></pre></body></html>

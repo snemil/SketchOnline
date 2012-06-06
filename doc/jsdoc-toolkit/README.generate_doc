@@ -1,0 +1,4 @@
+Bashscript som k?r jsdoctoolkit f?r att generera documentationen, sedan 
+firefox f?r att l?sa dokumentationen. Annan webl?sare g?r ocks? bra att 
+k?ra.
+Editera s?kv?garna i bashscriptet efter behov.
